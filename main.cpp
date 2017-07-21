@@ -61,12 +61,12 @@ void cb_load(Fl_Widget* o, void* field){
 	for(int temp = 0; temp < indepCount; temp++){
 		names[temp] = (char*)calloc(100, sizeof(char));
 		fscanf(input, "%s", names[temp]);
-		int row = 100+temp*(500/indepCount);//FIXME make 500 dependent on height -200
-		int height = 500/indepCount;//FIXME
-		labels[temp] = new Fl_Box(25, row, 100, height, names[temp]);
-		minf[temp] = new Fl_Input(125, row, 100, height);
-		maxf[temp] = new Fl_Input(225, row, 100, height);
-		stepf[temp] = new Fl_Input(325, row, 100, height);
+		int row = 100+temp*(590/indepCount);//FIXME make 500 dependent on height -200
+		int height = 590/indepCount;//FIXME
+		labels[temp] = new Fl_Box(25, row, 150, height, names[temp]);
+		minf[temp] = new Fl_Input(175, row, 150, height);
+		maxf[temp] = new Fl_Input(325, row, 150, height);
+		stepf[temp] = new Fl_Input(475, row, 150, height);
 	}
 	o->label("Load");
 	win->redraw();
@@ -82,14 +82,14 @@ int main(int argc, char *argv[]){
 }
 
 void createWindow(){
-	win = new Fl_Window(600, 700, "SoftFit v1.0");
+	win = new Fl_Window(650, 700, "SoftFit v1.0");
 	win->begin();
 	Fl_File_Input* filename = new Fl_File_Input(75, 10, 500, 35, "Input File");
 	Fl_Button* load = new Fl_Button(25, 45, 550, 35, "Load");
 	new Fl_Box(25, 80, 100, 20, "NAME");
-	new Fl_Box(125, 80, 100, 20, "MIN");
-	new Fl_Box(225, 80, 100, 20, "MAX");
-	new Fl_Box(325, 80, 100, 20, "STEP");
+	new Fl_Box(175, 80, 100, 20, "MIN");
+	new Fl_Box(325, 80, 100, 20, "MAX");
+	new Fl_Box(475, 80, 100, 20, "STEP");
 	win->end();
 	load->callback(cb_load, filename);
 	win->show();
