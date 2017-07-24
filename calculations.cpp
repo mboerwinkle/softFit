@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <pthread.h>
 #include "insertionSort.h"
 #include "calculations.h"
 float completion = 0;
@@ -29,11 +30,14 @@ void* calculateMain(void *null){
 		long int thisScore = 0;
 		calcs++;
 		completion = (double)calcs/(double)totalCalcs;
+		if(calcs %1000 == 0){
+			pthread_testcancel();//this allows the cancel button to function
+		}
 		double indivScores[records];
 		for(int thisRecord = 0; thisRecord < records; thisRecord++){
 			double calculatedValue = 0;
 			for(int temp = 0; temp < indepCount; temp++){
-				calculatedValue+=test[temp]*data[thisRecord][temp+1];
+				calculatedValue+=test[temp]*data[thisRecord][temp];
 			}
 			indivScores[thisRecord] = pow(calculatedValue-data[thisRecord][0],2)/100000;
 		}

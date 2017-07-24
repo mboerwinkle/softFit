@@ -22,9 +22,10 @@ Fl_Float_Input** stepf = NULL;
 Fl_Window* win = NULL;
 void createWindow();
 
-Fl_Window* subWindow = NULL;
+//Fl_Window* subWindow = NULL;
 
 Fl_Button* calculate = NULL;
+Fl_Button* cancel = NULL;
 pthread_t calculationThread;
 //Callbacks
 Fl_Progress* bar;
@@ -35,13 +36,24 @@ void cb_updateTimer(void* null);
 void cb_updateTimer(void* null){
 	bar->value(completion);
 	if(done){
-		subWindow->hide();
+		bar->hide();
+		win->redraw();
 		showResults();
 		return;
 	}
 	Fl::repeat_timeout(0.5, cb_updateTimer);
 }
 
+void cb_cancelCalc(Fl_Widget* o, void* null){
+	Fl::remove_timeout(cb_updateTimer);
+	cancel->hide();
+	bar->hide();
+	win->redraw();
+	pthread_cancel(calculationThread);
+	pthread_join(calculationThread, nullptr);
+	calculate->show();
+	win->redraw();
+}
 void cb_calculate(Fl_Widget* o, void* field){
 	o->hide();
 	win->redraw();
@@ -51,16 +63,11 @@ void cb_calculate(Fl_Widget* o, void* field){
 		step[temp] = atof(stepf[temp]->value());
 	}
 	pthread_create(&calculationThread, NULL, calculateMain, NULL);
-	subWindow = new Fl_Window(650, 300, "Calculating...");
-	subWindow->begin();
-	bar = new Fl_Progress(10, 140, 630, 20);
-	subWindow->end();
-	bar->minimum(0);
-	bar->maximum(1);
 	bar->value(0);
+	bar->show();
+	cancel->show();
 	Fl::add_timeout(0.5, cb_updateTimer);
-	subWindow->show();
-	Fl::run();
+	win->redraw();
 }
 
 
@@ -148,14 +155,21 @@ void createWindow(){
 	Fl_File_Input* filename = new Fl_File_Input(75, 10, 500, 35, "Input File");
 	Fl_Button* load = new Fl_Button(25, 45, 550, 35, "Load");
 	calculate = new Fl_Button(550, 670, 95, 20, "Calculate");
+	cancel = new Fl_Button(550, 670, 95, 20, "Cancel");
 	new Fl_Box(25, 80, 100, 20, "NAME");
 	new Fl_Box(175, 80, 100, 20, "MIN");
 	new Fl_Box(325, 80, 100, 20, "MAX");
 	new Fl_Box(475, 80, 100, 20, "STEP");
+	bar = new Fl_Progress(10, 670, 540, 20, "Calculating");
 	win->end();
+	bar->minimum(0);
+	bar->maximum(1);
+	bar->hide();
+	cancel->hide();
 	calculate->hide();
 	load->callback(cb_load, filename);
 	calculate->callback(cb_calculate, NULL);
+	cancel->callback(cb_cancelCalc, NULL);
 	win->show();
 }
 
