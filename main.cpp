@@ -10,6 +10,8 @@
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Progress.H>
+#include <FL/Fl_Choice.H>
+#include <FL/Fl_Chart.H>
 #include "calculations.h"
 
 char** names = NULL;
@@ -22,14 +24,21 @@ Fl_Float_Input** stepf = NULL;
 Fl_Window* win = NULL;
 void createWindow();
 
-
 Fl_Button* calculate = NULL;
 Fl_Button* cancel = NULL;
 pthread_t calculationThread;
 //Callbacks
 Fl_Progress* bar;
+Fl_Chart **charts = NULL;
 
 void showResults();
+
+void cb_resultChoice(Fl_Widget* o, void* idx){
+	for(int x = 0; x < indepCount; x++){
+		charts[x]->hide();
+	}
+	charts[(long int)idx]->show();
+}
 
 void cb_updateTimer(void* null); 
 void cb_updateTimer(void* null){
@@ -127,7 +136,9 @@ void cb_load(Fl_Widget* o, void* field){
 	
 	win->end();
 	data = (double**)calloc(records, sizeof(double*));
+	actualValues = (double*)calloc(records, sizeof(double));
 	for(int temp = 0; temp < records; temp++){
+		fscanf(input, "%lf", &(actualValues[temp]));
 		data[temp] = (double*)calloc(indepCount, sizeof(double));
 		for(int field = 0; field < indepCount; field++){
 			fscanf(input, "%lf", &(data[temp][field]));
@@ -147,6 +158,30 @@ void reset(){
 }
 
 void showResults(){
+	Fl_Window results(600, 500, "Results");
+	free(charts);
+	charts = (Fl_Chart**)calloc(indepCount, sizeof(Fl_Chart*));
+	results.begin();
+	Fl_Choice choice(10, 10, 100, 35, "VAR");
+	for(int idx = 0; idx < indepCount; idx++){
+		choice.add(names[idx], 0, cb_resultChoice, (void*)(long int)idx);
+		charts[idx] = new Fl_Chart(110, 10, 480, 480);
+		charts[idx]->autosize(true);
+		charts[idx]->type(FL_LINE_CHART);
+		charts[idx]->hide();
+		for(int x = 0; x < (max[idx]-min[idx])/step[idx]+1; x++){
+			if(x%(int)(((max[idx]-min[idx])/step[idx]+1)/5) == 0){
+				char thisVal[80];
+				sprintf(thisVal, "%lf", min[idx]+step[idx]*x);
+				charts[idx]->add(best[idx][x], thisVal);
+			}else{
+				charts[idx]->add(best[idx][x]);
+			}
+		}
+	}
+	results.end();
+	results.show();
+	Fl::run();
 	reset();
 }
 

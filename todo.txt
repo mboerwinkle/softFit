@@ -1,3 +1,4 @@
 FIXME's
 Better sort than insertion
-fix variety of memory leaks
+fix variety of memory leaks and initialization errors
+show peak

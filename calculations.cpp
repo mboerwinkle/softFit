@@ -11,6 +11,7 @@ double **data;
 long int **best = NULL;
 double *peak = NULL;
 double *min, *max, *step;
+double *actualValues;
 int indepCount;
 int records;
 void* calculateMain(void *null){
@@ -42,7 +43,7 @@ void* calculateMain(void *null){
 			for(int temp = 0; temp < indepCount; temp++){
 				calculatedValue+=test[temp]*data[thisRecord][temp];
 			}
-			indivScores[thisRecord] = pow(calculatedValue-data[thisRecord][0],2)/100000;
+			indivScores[thisRecord] = pow(calculatedValue-actualValues[thisRecord],2)/100000;
 		}
 //		insertionSort(indivScores, records);//FIXME do not require on complete tests
 		for(int scoreIdx = 0; scoreIdx < records*1; scoreIdx++){
