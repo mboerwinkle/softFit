@@ -1,0 +1,5 @@
+FIXME's
+Better sort than insertion
+cancel calculations button
+single dialog until results
+
