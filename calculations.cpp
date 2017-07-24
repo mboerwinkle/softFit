@@ -8,13 +8,16 @@
 float completion = 0;
 bool done = false;
 double **data;
-double *best = NULL;
+long int **best = NULL;
+double *peak = NULL;
 double *min, *max, *step;
 int indepCount;
 int records;
 void* calculateMain(void *null){
 	done = false;
-	best = (double*)realloc(best, sizeof(double)*indepCount);
+	int bestIndex[indepCount];
+	memset(bestIndex, 0, sizeof(int)*indepCount);
+	peak = (double*)realloc(peak, sizeof(double)*indepCount);
 	double test[indepCount];
 	memcpy(test, min, sizeof(double)*indepCount);
 
@@ -45,21 +48,28 @@ void* calculateMain(void *null){
 		for(int scoreIdx = 0; scoreIdx < records*1; scoreIdx++){
 			thisScore+=indivScores[scoreIdx];
 		}
+		for(int attr = 0; attr < indepCount; attr++){
+			if(thisScore < best[attr][bestIndex[attr]]){
+				best[attr][bestIndex[attr]] = thisScore;
+			}
+		}
 		if(thisScore < topscore){
 			topscore = thisScore;
 			for(int attr = 0; attr < indepCount; attr++){
-				best[attr] = test[attr];
+				peak[attr] = test[attr];
 			}
 		}
 		test[0]+=step[0];
+		bestIndex[0]++;
 		for(int curr = 1; curr < indepCount; curr++){
 			if(test[curr-1] > max[curr-1]){
 				test[curr-1] = min[curr-1];
+				bestIndex[curr-1] = 0;
 				test[curr]+=step[curr];
+				bestIndex[curr]++;
 			}
 		}
 	}
-	
 	done = true;
 	return 0;
 }

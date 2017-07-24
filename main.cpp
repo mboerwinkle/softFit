@@ -22,7 +22,6 @@ Fl_Float_Input** stepf = NULL;
 Fl_Window* win = NULL;
 void createWindow();
 
-//Fl_Window* subWindow = NULL;
 
 Fl_Button* calculate = NULL;
 Fl_Button* cancel = NULL;
@@ -37,6 +36,8 @@ void cb_updateTimer(void* null){
 	bar->value(completion);
 	if(done){
 		bar->hide();
+		cancel->hide();
+		calculate->show();
 		win->redraw();
 		showResults();
 		return;
@@ -57,10 +58,15 @@ void cb_cancelCalc(Fl_Widget* o, void* null){
 void cb_calculate(Fl_Widget* o, void* field){
 	o->hide();
 	win->redraw();
+	best = (long int**)calloc(indepCount, sizeof(long int*));
 	for(int temp = 0; temp < indepCount; temp++){
 		min[temp] = atof(minf[temp]->value());
 		max[temp] = atof(maxf[temp]->value());
 		step[temp] = atof(stepf[temp]->value());
+		best[temp] = (long int*)calloc((max[temp]-min[temp])/step[temp]+1, sizeof(long int));
+		for(int idx = 0; idx < (max[temp]-min[temp])/step[temp]+1; idx++){
+			best[temp][idx] = 9223372036854775807;//FIXME nasty
+		}
 	}
 	pthread_create(&calculationThread, NULL, calculateMain, NULL);
 	bar->value(0);
