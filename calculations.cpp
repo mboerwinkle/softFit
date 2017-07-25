@@ -43,10 +43,10 @@ void* calculateMain(void *null){
 			for(int temp = 0; temp < indepCount; temp++){
 				calculatedValue+=test[temp]*data[thisRecord][temp];
 			}
-			indivScores[thisRecord] = pow(calculatedValue-actualValues[thisRecord],2)/100000;
+			indivScores[thisRecord] = abs(/*pow(*/calculatedValue-actualValues[thisRecord]/1000);//,2)/100000;
 		}
-//		insertionSort(indivScores, records);//FIXME do not require on complete tests
-		for(int scoreIdx = 0; scoreIdx < records*1; scoreIdx++){
+		insertionSort(indivScores, records);//FIXME do not require on complete tests
+		for(int scoreIdx = 0; scoreIdx < records*0.666; scoreIdx++){
 			thisScore+=indivScores[scoreIdx];
 		}
 		for(int attr = 0; attr < indepCount; attr++){
