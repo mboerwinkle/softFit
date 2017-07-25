@@ -167,15 +167,19 @@ void showResults(){
 		choice.add(names[idx], 0, cb_resultChoice, (void*)(long int)idx);
 		charts[idx] = new Fl_Chart(110, 10, 480, 480);
 		charts[idx]->autosize(true);
-		charts[idx]->type(FL_LINE_CHART);
+		charts[idx]->type(FL_BAR_CHART);
 		charts[idx]->hide();
 		for(int x = 0; x < (max[idx]-min[idx])/step[idx]+1; x++){
-			if(x%(int)(((max[idx]-min[idx])/step[idx]+1)/5) == 0){
+			char thiscolor = FL_RED;
+			if(x>=1 && x<(max[idx]-min[idx])/step[idx] && best[idx][x] < best[idx][x-1] && best[idx][x] < best[idx][x+1]){
+				thiscolor = FL_GREEN;
+			}
+			if(x%(int)(((max[idx]-min[idx])/step[idx]+1)/10) == 0){
 				char thisVal[80];
-				sprintf(thisVal, "%lf", min[idx]+step[idx]*x);
-				charts[idx]->add(best[idx][x], thisVal);
+				sprintf(thisVal, "%.2lf", min[idx]+step[idx]*x);
+				charts[idx]->add(best[idx][x], thisVal, thiscolor);
 			}else{
-				charts[idx]->add(best[idx][x]);
+				charts[idx]->add(best[idx][x], NULL, thiscolor);
 			}
 		}
 	}

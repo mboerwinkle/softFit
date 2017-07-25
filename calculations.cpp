@@ -14,8 +14,19 @@ double *min, *max, *step;
 double *actualValues;
 int indepCount;
 int records;
+void printInput(){
+	for(int x = 0; x < records; x++){
+		printf("%lf ", actualValues[x]);
+		for(int temp = 0; temp < indepCount; temp++){
+			printf("%lf ", data[x][temp]);
+		}
+		printf("\n");
+	}
+}
+
 void* calculateMain(void *null){
 	done = false;
+	printInput();
 	int bestIndex[indepCount];
 	memset(bestIndex, 0, sizeof(int)*indepCount);
 	peak = (double*)realloc(peak, sizeof(double)*indepCount);
@@ -43,7 +54,7 @@ void* calculateMain(void *null){
 			for(int temp = 0; temp < indepCount; temp++){
 				calculatedValue+=test[temp]*data[thisRecord][temp];
 			}
-			indivScores[thisRecord] = abs(/*pow(*/calculatedValue-actualValues[thisRecord]/1000);//,2)/100000;
+			indivScores[thisRecord] = abs(/*pow(*/(calculatedValue-actualValues[thisRecord])/1000);//,2)/100000;
 		}
 		insertionSort(indivScores, records);//FIXME do not require on complete tests
 		for(int scoreIdx = 0; scoreIdx < records*0.666; scoreIdx++){
