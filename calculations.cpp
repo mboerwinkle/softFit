@@ -11,11 +11,12 @@ double **data;
 double keep = 1;
 double power = 2;
 long int **best = NULL;
-double *peak = NULL;
+//double *peak = NULL;
 double *min, *max, *step;
 double *actualValues;
 int indepCount;
 int records;
+double calcScore(double* test);
 void printInput(){
 	printf("keep %lf, power %lf\n", keep, power);
 	for(int x = 0; x < records; x++){
@@ -32,7 +33,7 @@ void* calculateMain(void *null){
 	printInput();
 	int bestIndex[indepCount];
 	memset(bestIndex, 0, sizeof(int)*indepCount);
-	peak = (double*)realloc(peak, sizeof(double)*indepCount);
+//	peak = (double*)realloc(peak, sizeof(double)*indepCount);
 	double test[indepCount];
 	memcpy(test, min, sizeof(double)*indepCount);
 
@@ -42,38 +43,27 @@ void* calculateMain(void *null){
 	}
 	printf("total Calcs %ld\n", totalCalcs);
 
-	long int topscore = 9223372036854775807;
+//	long int topscore = 9223372036854775807;
 	long int calcs = 0;
 	while(test[indepCount-1] <= max[indepCount-1]){
 		long int thisScore = 0;
 		calcs++;
 		completion = (double)calcs/(double)totalCalcs;
-		if(calcs %1000 == 0){
+		if(calcs %10000 == 0){
 			pthread_testcancel();//this allows the cancel button to function
 		}
-		double indivScores[records];
-		for(int thisRecord = 0; thisRecord < records; thisRecord++){
-			double calculatedValue = 0;
-			for(int temp = 0; temp < indepCount; temp++){
-				calculatedValue+=test[temp]*data[thisRecord][temp];
-			}
-			indivScores[thisRecord] = pow(abs(calculatedValue-actualValues[thisRecord]),power);
-		}
-		insertionSort(indivScores, records);
-		for(int scoreIdx = 0; scoreIdx < records*keep; scoreIdx++){
-			thisScore+=indivScores[scoreIdx];
-		}
+		calcScore(test);
 		for(int attr = 0; attr < indepCount; attr++){
 			if(thisScore < best[attr][bestIndex[attr]]){
 				best[attr][bestIndex[attr]] = thisScore;
 			}
 		}
-		if(thisScore < topscore){
+/*		if(thisScore < topscore){
 			topscore = thisScore;
 			for(int attr = 0; attr < indepCount; attr++){
 				peak[attr] = test[attr];
 			}
-		}
+		}*/
 		test[0]+=step[0];
 		bestIndex[0]++;
 		for(int curr = 1; curr < indepCount; curr++){
@@ -87,4 +77,20 @@ void* calculateMain(void *null){
 	}
 	done = true;
 	return 0;
+}
+double calcScore(double* test){
+		double indivScores[records];
+		for(int thisRecord = 0; thisRecord < records; thisRecord++){
+			double calculatedValue = 0;
+			for(int temp = 0; temp < indepCount; temp++){
+				calculatedValue+=test[temp]*data[thisRecord][temp];
+			}
+			indivScores[thisRecord] = pow(abs(calculatedValue-actualValues[thisRecord]),power);
+		}
+		insertionSort(indivScores, records);
+		double thisScore = 0;
+		for(int scoreIdx = 0; scoreIdx < records*keep; scoreIdx++){
+			thisScore+=indivScores[scoreIdx];
+		}
+		return thisScore;
 }

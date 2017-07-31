@@ -1,4 +1,5 @@
 FIXME's
+clarify which inputs need to be doubles and which need to be ints
 Better sort than insertion
 fix variety of memory leaks and initialization errors
 multicore (dual rasppi should be faster than this)
