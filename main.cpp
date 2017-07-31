@@ -17,6 +17,7 @@
 char** names = NULL;
 
 FILE* input = NULL;
+char fileName[80];
 Fl_Box** labels = NULL;
 Fl_Float_Input** minf = NULL;
 Fl_Float_Input** maxf = NULL;
@@ -97,7 +98,8 @@ void cb_load(Fl_Widget* o, void* field){
 	if(input != NULL){
 		fclose(input);
 	}
-	input = fopen(((Fl_File_Input*)field)->value(), "r");
+	strcpy(fileName, ((Fl_File_Input*)field)->value());
+	input = fopen(fileName, "r");
 	if(input == NULL){
 		o->label("Failed to Load File");
 		return;
@@ -165,7 +167,7 @@ void reset(){
 }
 
 void showResults(){
-	Fl_Window results(600, 500, "Results");
+	Fl_Window results(600, 500, fileName);
 	free(charts);
 	charts = (Fl_Chart**)calloc(indepCount, sizeof(Fl_Chart*));
 	results.begin();
