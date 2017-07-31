@@ -3,6 +3,7 @@ extern float completion;
 extern bool done;
 extern int indepCount;
 extern int records;
+extern char **names;
 extern double **data;
 extern double *actualValues;
 extern double *min, *max, *step;

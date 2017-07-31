@@ -11,7 +11,6 @@ double **data;
 double keep = 1;
 double power = 2;
 long int **best = NULL;
-//double *peak = NULL;
 double *min, *max, *step;
 double *actualValues;
 int indepCount;
@@ -33,7 +32,6 @@ void* calculateMain(void *null){
 	printInput();
 	int bestIndex[indepCount];
 	memset(bestIndex, 0, sizeof(int)*indepCount);
-//	peak = (double*)realloc(peak, sizeof(double)*indepCount);
 	double test[indepCount];
 	memcpy(test, min, sizeof(double)*indepCount);
 
@@ -42,28 +40,45 @@ void* calculateMain(void *null){
 		totalCalcs*=((max[x]-min[x])/step[x])+1;
 	}
 	printf("total Calcs %ld\n", totalCalcs);
-
-//	long int topscore = 9223372036854775807;
 	long int calcs = 0;
 	while(test[indepCount-1] <= max[indepCount-1]){
-		long int thisScore = 0;
 		calcs++;
 		completion = (double)calcs/(double)totalCalcs;
 		if(calcs %10000 == 0){
 			pthread_testcancel();//this allows the cancel button to function
 		}
-		calcScore(test);
+		double thisScore = calcScore(test);
 		for(int attr = 0; attr < indepCount; attr++){
 			if(thisScore < best[attr][bestIndex[attr]]){
 				best[attr][bestIndex[attr]] = thisScore;
 			}
 		}
-/*		if(thisScore < topscore){
-			topscore = thisScore;
-			for(int attr = 0; attr < indepCount; attr++){
-				peak[attr] = test[attr];
+		double adjTest[indepCount];
+		memcpy(adjTest, test, sizeof(double)*indepCount);
+		bool isPeak = true;
+		for(int attr = 0; attr < indepCount; attr++){
+			//plus
+			adjTest[attr]+=step[attr];
+			if(calcScore(adjTest)<thisScore){
+				isPeak = false;
+				break;
 			}
-		}*/
+			//neg
+			adjTest[attr]-=2*step[attr];
+			if(calcScore(adjTest)<thisScore){
+				isPeak = false;
+				break;
+			}
+			//return to same
+			adjTest[attr] = test[attr];
+		}
+		if(isPeak){
+			printf("peak: ");
+			for(int attr = 0; attr < indepCount; attr++){
+				printf("%s %lf ", names[attr], test[attr]);
+			}
+			printf("\n");
+		}
 		test[0]+=step[0];
 		bestIndex[0]++;
 		for(int curr = 1; curr < indepCount; curr++){
