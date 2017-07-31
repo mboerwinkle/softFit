@@ -21,6 +21,10 @@ Fl_Box** labels = NULL;
 Fl_Float_Input** minf = NULL;
 Fl_Float_Input** maxf = NULL;
 Fl_Float_Input** stepf = NULL;
+Fl_Float_Input* keepf = NULL;
+Fl_Float_Input* powerf = NULL;
+
+
 Fl_Window* win = NULL;
 void createWindow();
 
@@ -67,7 +71,10 @@ void cb_cancelCalc(Fl_Widget* o, void* null){
 void cb_calculate(Fl_Widget* o, void* field){
 	o->hide();
 	win->redraw();
+	free(best);
 	best = (long int**)calloc(indepCount, sizeof(long int*));
+	keep = atof(keepf->value());
+	power = atof(powerf->value());
 	for(int temp = 0; temp < indepCount; temp++){
 		min[temp] = atof(minf[temp]->value());
 		max[temp] = atof(maxf[temp]->value());
@@ -162,7 +169,7 @@ void showResults(){
 	free(charts);
 	charts = (Fl_Chart**)calloc(indepCount, sizeof(Fl_Chart*));
 	results.begin();
-	Fl_Choice choice(10, 10, 100, 35, "VAR");
+	Fl_Choice choice(10, 10, 100, 35);
 	for(int idx = 0; idx < indepCount; idx++){
 		choice.add(names[idx], 0, cb_resultChoice, (void*)(long int)idx);
 		charts[idx] = new Fl_Chart(110, 10, 480, 480);
@@ -174,7 +181,7 @@ void showResults(){
 			if(x>=1 && x<(max[idx]-min[idx])/step[idx] && best[idx][x] < best[idx][x-1] && best[idx][x] < best[idx][x+1]){
 				thiscolor = FL_GREEN;
 			}
-			if(x%(int)(((max[idx]-min[idx])/step[idx]+1)/10) == 0){
+			if((int)((((max[idx]-min[idx])/step[idx]+1)/10)) == 0 || x%(int)((((max[idx]-min[idx])/step[idx]+1)/10)) == 0){
 				char thisVal[80];
 				sprintf(thisVal, "%.2lf", min[idx]+step[idx]*x);
 				charts[idx]->add(best[idx][x], thisVal, thiscolor);
@@ -195,12 +202,16 @@ int main(int argc, char *argv[]){
 }
 
 void createWindow(){
-	win = new Fl_Window(650, 700, "SoftFit v1.0");
+	win = new Fl_Window(700, 700, "SoftFit v1.0");
 	win->begin();
 	Fl_File_Input* filename = new Fl_File_Input(75, 10, 500, 35, "Input File");
 	Fl_Button* load = new Fl_Button(25, 45, 550, 35, "Load");
 	calculate = new Fl_Button(550, 670, 95, 20, "Calculate");
 	cancel = new Fl_Button(550, 670, 95, 20, "Cancel");
+	keepf = new Fl_Float_Input(650, 10, 50, 20, "Keep");
+	keepf->value("1.00");
+	powerf = new Fl_Float_Input(650, 30, 50, 20, "Power");
+	powerf->value("2.0");
 	new Fl_Box(25, 80, 100, 20, "NAME");
 	new Fl_Box(175, 80, 100, 20, "MIN");
 	new Fl_Box(325, 80, 100, 20, "MAX");

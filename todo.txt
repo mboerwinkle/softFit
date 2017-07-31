@@ -1,5 +1,6 @@
 FIXME's
 Better sort than insertion
 fix variety of memory leaks and initialization errors
-show peak(s)
 multicore (dual rasppi should be faster than this)
+scrub all inputs (simon testing)
+Save background of all minimums

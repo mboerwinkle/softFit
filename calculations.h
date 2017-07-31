@@ -7,3 +7,5 @@ extern double **data;
 extern double *actualValues;
 extern double *min, *max, *step;
 extern long int **best;
+extern double keep;
+extern double power;

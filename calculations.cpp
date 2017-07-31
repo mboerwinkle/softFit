@@ -8,6 +8,8 @@
 float completion = 0;
 bool done = false;
 double **data;
+double keep = 1;
+double power = 2;
 long int **best = NULL;
 double *peak = NULL;
 double *min, *max, *step;
@@ -15,6 +17,7 @@ double *actualValues;
 int indepCount;
 int records;
 void printInput(){
+	printf("keep %lf, power %lf\n", keep, power);
 	for(int x = 0; x < records; x++){
 		printf("%lf ", actualValues[x]);
 		for(int temp = 0; temp < indepCount; temp++){
@@ -54,10 +57,10 @@ void* calculateMain(void *null){
 			for(int temp = 0; temp < indepCount; temp++){
 				calculatedValue+=test[temp]*data[thisRecord][temp];
 			}
-			indivScores[thisRecord] = abs(/*pow(*/(calculatedValue-actualValues[thisRecord])/1000);//,2)/100000;
+			indivScores[thisRecord] = pow(abs(calculatedValue-actualValues[thisRecord]),power);
 		}
-		insertionSort(indivScores, records);//FIXME do not require on complete tests
-		for(int scoreIdx = 0; scoreIdx < records*0.666; scoreIdx++){
+		insertionSort(indivScores, records);
+		for(int scoreIdx = 0; scoreIdx < records*keep; scoreIdx++){
 			thisScore+=indivScores[scoreIdx];
 		}
 		for(int attr = 0; attr < indepCount; attr++){
