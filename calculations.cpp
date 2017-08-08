@@ -13,7 +13,7 @@ double power = 2;
 long int **best = NULL;
 double *min, *max, *step;
 double *actualValues;
-int indepCount;
+int indepCount = 0;
 int records;
 double calcScore(double* test);
 void printInput(){
@@ -53,18 +53,18 @@ void* calculateMain(void *null){
 				best[attr][bestIndex[attr]] = thisScore;
 			}
 		}
-		double adjTest[indepCount];
+/*		double adjTest[indepCount];
 		memcpy(adjTest, test, sizeof(double)*indepCount);
 		bool isPeak = true;
 		for(int attr = 0; attr < indepCount; attr++){
 			//plus
-			adjTest[attr]+=step[attr];
+			adjTest[attr]=test[attr]+step[attr];
 			if(calcScore(adjTest)<thisScore){
 				isPeak = false;
 				break;
 			}
 			//neg
-			adjTest[attr]-=2*step[attr];
+			adjTest[attr]=test[attr]-step[attr];
 			if(calcScore(adjTest)<thisScore){
 				isPeak = false;
 				break;
@@ -78,7 +78,7 @@ void* calculateMain(void *null){
 				printf("%s %lf ", names[attr], test[attr]);
 			}
 			printf("\n");
-		}
+		}*/
 		test[0]+=step[0];
 		bestIndex[0]++;
 		for(int curr = 1; curr < indepCount; curr++){
@@ -102,7 +102,7 @@ double calcScore(double* test){
 			}
 			indivScores[thisRecord] = pow(abs(calculatedValue-actualValues[thisRecord]),power);
 		}
-		insertionSort(indivScores, records);
+		insertionSort(indivScores, records*keep);
 		double thisScore = 0;
 		for(int scoreIdx = 0; scoreIdx < records*keep; scoreIdx++){
 			thisScore+=indivScores[scoreIdx];

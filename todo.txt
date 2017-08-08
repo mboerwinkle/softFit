@@ -1,4 +1,7 @@
 FIXME's
+be sure to fclose all files
+have a list of presets that are loaded on launch
+only sort the amount that are going to be examined +1
 clarify which inputs need to be doubles and which need to be ints
 Better sort than insertion
 fix variety of memory leaks and initialization errors

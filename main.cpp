@@ -24,7 +24,7 @@ Fl_Float_Input** maxf = NULL;
 Fl_Float_Input** stepf = NULL;
 Fl_Float_Input* keepf = NULL;
 Fl_Float_Input* powerf = NULL;
-
+Fl_Choice* presetChoice = NULL;
 
 Fl_Window* win = NULL;
 void createWindow();
@@ -43,6 +43,10 @@ void cb_resultChoice(Fl_Widget* o, void* idx){
 		charts[x]->hide();
 	}
 	charts[(long int)idx]->show();
+}
+
+void cb_preset(Fl_Widget* o, void* null){
+	
 }
 
 void cb_updateTimer(void* null); 
@@ -197,14 +201,22 @@ void showResults(){
 	Fl::run();
 	reset();
 }
-
+void loadPresets(){
+	FILE* presets = fopen("presets.dat", "r");
+	if(presets == NULL){
+		puts("failed to load presets");
+		return;
+	}
+	fclose(presets);
+}
 int main(int argc, char *argv[]){
+	loadPresets();
 	createWindow();
 	return Fl::run();
 }
 
 void createWindow(){
-	win = new Fl_Window(700, 700, "SoftFit v1.0");
+	win = new Fl_Window(700, 700, "SoftFit v1.1");
 	win->begin();
 	Fl_File_Input* filename = new Fl_File_Input(75, 10, 500, 35, "Input File");
 	Fl_Button* load = new Fl_Button(25, 45, 550, 35, "Load");
@@ -214,6 +226,7 @@ void createWindow(){
 	keepf->value("1.00");
 	powerf = new Fl_Float_Input(650, 30, 50, 20, "Power");
 	powerf->value("2.0");
+	presetChoice = new Fl_Choice(650, 50, 50, 20, "Preset");
 	new Fl_Box(25, 80, 100, 20, "NAME");
 	new Fl_Box(175, 80, 100, 20, "MIN");
 	new Fl_Box(325, 80, 100, 20, "MAX");
@@ -225,6 +238,7 @@ void createWindow(){
 	bar->hide();
 	cancel->hide();
 	calculate->hide();
+	presetChoice->callback(cb_preset, NULL);
 	load->callback(cb_load, filename);
 	calculate->callback(cb_calculate, NULL);
 	cancel->callback(cb_cancelCalc, NULL);
